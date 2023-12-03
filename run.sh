@@ -10,6 +10,7 @@ prefix="$1"
 bin=bin/${prefix}.out
 make "$bin"
 mkdir -p tmp
+rm -rf tmp/${prefix}_*
 csplit \
     --quiet \
     --prefix=tmp/${prefix}_ \
