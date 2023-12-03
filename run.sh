@@ -9,9 +9,10 @@ fi
 prefix="$1"
 bin=bin/${prefix}.out
 make "$bin"
+mkdir -p tmp
 csplit \
     --quiet \
-    --prefix=tmp/e_ \
+    --prefix=tmp/${prefix}_ \
     --suffix-format=%02d.txt \
     --suppress-matched \
     ${prefix}.txt /^$/ {*}
