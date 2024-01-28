@@ -1,0 +1,9 @@
+---
+BasedOnStyle: Google
+IndentWidth: 3
+---
+Language: Cpp
+IncludeBlocks: Merge
+IndentAccessModifiers: false
+AccessModifierOffset: -3
+...
