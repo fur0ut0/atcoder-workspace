@@ -6,6 +6,11 @@ if [[ $# -lt 1 ]]; then
    exit 1
 fi
 
+# Increase stack size
+if [[ $(ulimit -s) < 1048576 ]]; then
+   ulimit -s 1048576
+fi
+
 prefix="$1"
 bin=bin/${prefix}.out
 make "$bin"
