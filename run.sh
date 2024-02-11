@@ -13,7 +13,7 @@ fi
 
 prefix="$1"
 bin=bin/${prefix}.out
-rm "$bin"
+rm -rf "$bin"
 make "$bin"
 mkdir -p tmp
 rm -rf tmp/${prefix}_*
