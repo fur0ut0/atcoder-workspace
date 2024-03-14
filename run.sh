@@ -13,8 +13,9 @@ fi
 
 prefix="$1"
 bin=bin/${prefix}.out
-rm -rf "$bin"
 make "$bin"
+
+txt="${2:-${prefix}.txt}"
 mkdir -p tmp
 rm -rf tmp/${prefix}_*
 csplit \
@@ -22,7 +23,8 @@ csplit \
     --prefix=tmp/${prefix}_ \
     --suffix-format=%02d.txt \
     --suppress-matched \
-    ${prefix}.txt /^$/ {*}
+    "$txt" /^$/ {*}
 for i in tmp/${prefix}_*.txt; do
+   echo "==> Test case '$i':"
    "./$bin" < "${i}"
 done
