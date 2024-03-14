@@ -1,6 +1,8 @@
 import random
+import itertools
 
+N = 100_000
 
-def print_array(a):
-    for e in a:
-        print(e)
+print(N)
+for i in range(N):
+    print(random.randint(1, 100_000))
