@@ -13,4 +13,4 @@ if [[ -d "$src" ]]; then
 else
    git clone "$repos_url" "$src"
 fi
-cp -v -a -f tmp/ac-library/atcoder .
+cp -v -a -f "$src"/atcoder "$dst"
