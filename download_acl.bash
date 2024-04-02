@@ -6,8 +6,7 @@ src=tmp/ac-library/
 dst=./
 
 if [[ -d "$src" ]]; then
-   pushd
-   cd "$src"
+   pushd "$src"
    git pull --force
    popd
 else
