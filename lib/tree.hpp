@@ -5,13 +5,13 @@ using namespace std;
 
 template <typename I>
 struct Tree {
-   using IndexType = I;
+   using Vertex = I;
 
    /**
     * @param [in] N number of vertices
     * @param [in] E edges of tree
     */
-   explicit Tree(I N, const vector<pair<I, I>>& E) : n_vertices(N) {
+   explicit Tree(I N, const vector<pair<Vertex, Vertex>>& E) : n_vertices(N) {
       connected_vertices.resize(n_vertices);
       for (auto [u, v] : E) {
          connected_vertices[u].push_back(v);
@@ -20,8 +20,8 @@ struct Tree {
    }
 
    bool IsValidTree() const {
-      I root = 0;
-      vector<I> visit_cnt(n_vertices);
+      Vertex root = 0;
+      vector<Vertex> visit_cnt(n_vertices);
       auto dfs = [&](auto&& self, I v, I p = -1) -> void {
          for (auto u : connected_vertices[v]) {
             if (u == root || u == p) continue;
@@ -36,10 +36,10 @@ struct Tree {
    template <typename T>
    vector<T> Centroids(const vector<T>& weights) {
       const auto tree_weight = accumulate(weights.begin(), weights.end());
-      const I root = 0;
+      const Vertex root = 0;
 
-      vector<I> centroids;
-      auto dfs = [&](auto&& self, ll v, ll p = -1) -> I {
+      vector<Vertex> centroids;
+      auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> T {
          T subtree_weight = 0;
          bool is_centroid = true;
          for (auto u : connected_vertices[v]) {
@@ -69,5 +69,5 @@ struct Tree {
    // TODO: rerooting tree DP
 
    I n_vertices;
-   vector<vector<I>> connected_vertices;
+   vector<vector<Vertex>> connected_vertices;
 };
