@@ -1,15 +1,33 @@
 STD ?= 2a
+BASENAME ?= a
 
-CC = g++
-CFLAGS = -std=c++$(STD) -I. -Wall -Wextra
+CXX := g++
+CXXFLAGS := -fdiagnostics-color=always -std=c++$(STD) -I. -Wall -Wextra -fsanitize=undefined,address
 
-all: $(addprefix bin/, $(addsuffix .out, $(basename $(wildcard *.cpp))))
+BUILD_DIR := bin
+SRC := $(BASENAME).cpp
+TARGET := $(BUILD_DIR)/$(BASENAME).out
+DEBUG_TARGET := $(BUILD_DIR)/debug/$(BASENAME).out
 
-bin/%.out: %.cpp
-	mkdir -p $(@D)
-	$(CC) -o $@ $^ $(CFLAGS)
+.PHONY: clean debug release
 
-.PHONY: clean
+release: CXXFLAGS += -O2
+debug: CXXFLAGS += -g -O0
 
+release: $(TARGET)
+debug: $(DEBUG_TARGET)
 clean:
-	rm -rf bin
+	$(RM) -r $(BUILD_DIR)
+
+$(TARGET): $(SRC) $(BUILD_DIR)
+	$(CXX) -o $@ $< $(CXXFLAGS)
+
+$(DEBUG_TARGET): $(SRC) $(BUILD_DIR)/debug
+	$(CXX) -o $@ $< $(CXXFLAGS)
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(BUILD_DIR)/debug:
+	mkdir -p $(BUILD_DIR)/debug
+
