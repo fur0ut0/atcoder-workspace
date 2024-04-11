@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -eu
 
+root_dir="$(cd "$(dirname "$0")"/..; pwd)"
+
 repos_url="https://github.com/atcoder/ac-library"
-src=tmp/ac-library/
-dst=./
+src="$root_dir"/tmp/ac-library
+dst="$root_dir"/
 
 if [[ -d "$src" ]]; then
    pushd "$src"

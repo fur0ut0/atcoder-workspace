@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
+root_dir="$(cd "$(dirname "$0")"/..; pwd)"
+
 if [[ $# -lt 1 ]]; then
    echo "usage: $0 basename [mode]" >&2
    exit 1
@@ -14,6 +16,8 @@ fi
 basename="$1"
 txt="$1.txt"
 mode="${2:-release}"
+
+pushd "$root_dir"
 
 BASENAME=$basename make $mode
 
@@ -36,3 +40,5 @@ for i in tmp/${basename}_*.txt; do
    echo "==> Test case '$i':"
    "./$bin" < "${i}"
 done
+
+popd
