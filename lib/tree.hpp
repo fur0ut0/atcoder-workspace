@@ -59,7 +59,7 @@ struct Tree {
     * diameter
     */
    pair<I, pair<Vertex, Vertex>> Diameter() const {
-      auto [_, u] = FurthestVertex(0);
+      auto [std::ignore, u] = FurthestVertex(0);
       auto [d, v] = FurthestVertex(u);
       return {d, {u, v}};
    }
