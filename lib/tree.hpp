@@ -33,8 +33,39 @@ struct Tree {
       return count(visit_cnt.begin(), visit_cnt.end(), 1) == n_vertices;
    }
 
+   /**
+    * @return first is distance, second is furthest vertex
+    */
+   pair<I, Vertex> FurthestVertex(Vertex v) const {
+      auto dfs = [](auto&& self, Vertex v, Vertex p = -1) -> pair<I, Vertex> {
+         I max_d = 0;
+         Vertex max_v = v;
+         for (auto u : connected_vertices[v]) {
+            if (u == p) continue;
+            auto [d, w] = self(self, u, v);
+            ++d;
+            if (max_d < d) {
+               max_d = d;
+               max_v = w;
+            }
+         }
+         return {max_d, max_v};
+      };
+      return dfs(dfs, v);
+   }
+
+   /**
+    * @return first is diameter, second is vertices which are both ends of
+    * diameter
+    */
+   pair<I, pair<Vertex, Vertex>> Diameter() const {
+      auto [_, u] = FurthestVertex(0);
+      auto [d, v] = FurthestVertex(u);
+      return {d, {u, v}};
+   }
+
    template <typename T>
-   vector<T> Centroids(const vector<T>& weights) {
+   vector<T> Centroids(const vector<T>& weights) const {
       const auto tree_weight = accumulate(weights.begin(), weights.end());
       const Vertex root = 0;
 

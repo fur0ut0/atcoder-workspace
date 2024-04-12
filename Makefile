@@ -2,7 +2,7 @@ STD ?= 2a
 BASENAME ?= a
 
 CXX := g++
-CXXFLAGS := -fdiagnostics-color=always -std=c++$(STD) -I. -Wall -Wextra -fsanitize=undefined,address
+CXXFLAGS := -fdiagnostics-color=always -std=c++$(STD) -I. -Wall -Wextra
 
 BUILD_DIR := bin
 SRC := $(BASENAME).cpp
@@ -12,7 +12,7 @@ DEBUG_TARGET := $(BUILD_DIR)/debug/$(BASENAME).out
 .PHONY: clean debug release
 
 release: CXXFLAGS += -O2
-debug: CXXFLAGS += -g -O0
+debug: CXXFLAGS += -g -O0 -fsanitize=undefined,address
 
 release: $(TARGET)
 debug: $(DEBUG_TARGET)
