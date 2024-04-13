@@ -42,7 +42,7 @@ struct Tree {
     * @return first is distance, second is furthest vertex
     */
    pair<I, Vertex> FurthestVertex(Vertex v) const {
-      auto dfs = [](auto&& self, Vertex v, Vertex p = -1) -> pair<I, Vertex> {
+      auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> pair<I, Vertex> {
          I max_d = 0;
          Vertex max_v = v;
          for (auto u : connected_vertices[v]) {
@@ -64,7 +64,7 @@ struct Tree {
     * diameter
     */
    pair<I, pair<Vertex, Vertex>> Diameter() const {
-      auto [std::ignore, u] = FurthestVertex(0);
+      auto u = FurthestVertex(0).second;
       auto [d, v] = FurthestVertex(u);
       return {d, {u, v}};
    }
