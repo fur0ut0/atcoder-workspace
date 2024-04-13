@@ -20,17 +20,22 @@ struct Tree {
    }
 
    bool IsValidTree() const {
-      Vertex root = 0;
-      vector<Vertex> visit_cnt(n_vertices);
-      auto dfs = [&](auto&& self, I v, I p = -1) -> void {
-         for (auto u : connected_vertices[v]) {
-            if (u == root || u == p) continue;
-            self(self, u, v);
+      constexpr Vertex root = 0;
+      vector<bool> is_visited(n_vertices);
+      auto dfs = [&](auto&& self, I v, I p = -1) -> bool {
+         if (is_visited[v]) {
+            return false;
          }
-         ++visit_cnt[v];
+         is_visited[v] = true;
+         for (auto u : connected_vertices[v]) {
+            if (u == p) continue;
+            if (!self(self, u, v)) {
+               return false;
+            }
+         }
+         return true;
       };
-      dfs(dfs, root);
-      return count(visit_cnt.begin(), visit_cnt.end(), 1) == n_vertices;
+      return dfs(dfs, root);
    }
 
    /**
@@ -67,14 +72,14 @@ struct Tree {
    template <typename T>
    vector<T> Centroids(const vector<T>& weights) const {
       const auto tree_weight = accumulate(weights.begin(), weights.end());
-      const Vertex root = 0;
+      constexpr Vertex root = 0;
 
       vector<Vertex> centroids;
       auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> T {
          T subtree_weight = 0;
          bool is_centroid = true;
          for (auto u : connected_vertices[v]) {
-            if (u == root || u == p) continue;
+            if (u == p) continue;
             const auto child_subtree_weight = self(self, u, v);
             if (child_subtree_weight > tree_weight / 2) {
                is_centroid = false;
