@@ -13,7 +13,10 @@ struct Tree {
     */
    explicit Tree(I N, const vector<pair<Vertex, Vertex>>& E) : n_vertices(N) {
       connected_vertices.resize(n_vertices);
+      adjacent_indices.resize(n_vertices);
       for (auto [u, v] : E) {
+         adjacent_indices[u].push_back(connected_vertices[v].size());
+         adjacent_indices[v].push_back(connected_vertices[u].size());
          connected_vertices[u].push_back(v);
          connected_vertices[v].push_back(u);
       }
@@ -100,10 +103,90 @@ struct Tree {
       return centroids;
    }
 
-   // TODO: tree DP
+   /**
+    * @tparam T type of value in DP
+    * @tparam op operation for two sub-trees
+    * @tparam e identity of operation
+    * @tparam op_v operation for vertex w.r.t. result of child sub-trees
+    */
+#if __cplusplus >= 201703L
+   template <typename T, auto op, auto e, auto op_v>
+#else
+   template <class T, T (*op)(T, T), T (*e)(), T (*op_v)(T, Vertex)>
+#endif
+   vector<T> ReRootingDP() const {
+      static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>,
+                    "op must work as T(T, T)");
+      static_assert(std::is_convertible_v<decltype(e), std::function<T()>>,
+                    "e must work as T()");
+      static_assert(
+          std::is_convertible_v<decltype(op_v), std::function<T(T, Vertex)>>,
+          "e must work as T(T, Vertex)");
 
-   // TODO: rerooting tree DP
+      vector<Vertex> order;  //!< order of dfs
+      //! subtree_result[v][j] = subtree result which root is v's j-th child
+      vector<vector<T>> subtree_result(n_vertices);
+      for (Vertex v = 0; v < n_vertices; ++v) {
+         subtree_result[v].resize(connected_vertices[v].size());
+      }
+      auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> void {
+         order.push_back(v);
+         const auto& adj = connected_vertices[v];
+
+         for (auto u : adj) {
+            if (u == p) continue;
+            self(self, u, v);
+         }
+
+         if (p == -1) return;
+
+         auto res = e();
+         I pi = -1;  //!< index of p viewed from v
+         for (auto i = decltype(adj.size()){0}; i < adj.size(); ++i) {
+            const auto u = adj[i];
+            if (u == p) {
+               pi = i;
+               continue;
+            }
+            res = op(res, subtree_result[v][i]);
+         }
+         const auto vi = adjacent_indices[v][pi];  //!< index of v viewed from p
+         subtree_result[p][vi] = op_v(res, v);
+      };
+      //! Calculate values for vertex 0 as root
+      dfs(dfs, 0);
+
+      //! Calculate rerooted values for vertex r as root
+      vector<T> vertex_result(n_vertices);
+      for (auto r : order) {
+         const auto size = connected_vertices[r].size();
+         //! acc_from_right[i] = subtree results of {i + 1, ...}-th child of r
+         vector<T> acc_from_right(size);
+         acc_from_right.back() = e();
+         for (auto i = decltype(size){size - 1}; i > 0; --i) {
+            acc_from_right[i - 1] = op(subtree_result[r][i], acc_from_right[i]);
+         }
+         //! acc_from_right[i] = subtree results of {..., i - 1}-th child of r
+         T acc_from_left = e();
+         for (auto i = decltype(size){0}; i < size; ++i) {
+            const auto p = connected_vertices[r][i];
+            const auto ri =
+                adjacent_indices[r][i];  //!< index of r viewed from p
+            const auto acc = op(acc_from_left, acc_from_right[i]);
+            subtree_result[p][ri] = op_v(acc, r);
+            acc_from_left = op(acc_from_left, subtree_result[r][i]);
+         }
+         vertex_result[r] = op_v(acc_from_left, r);
+      }
+
+      return vertex_result;
+   }
 
    I n_vertices;
    vector<vector<Vertex>> connected_vertices;
+   /**
+    * NOTE: When connected_vertices[u][i] is v, adjacent_indices[u][i] contains
+    * the index of u in connected_vertices[v]
+    */
+   vector<vector<I>> adjacent_indices;
 };
