@@ -115,6 +115,7 @@ struct Tree {
    template <class T, T (*op)(T, T), T (*e)(), T (*op_v)(T, Vertex)>
 #endif
    vector<T> ReRootingDP() const {
+#if __cplusplus >= 201703L
       static_assert(std::is_convertible_v<decltype(op), std::function<T(T, T)>>,
                     "op must work as T(T, T)");
       static_assert(std::is_convertible_v<decltype(e), std::function<T()>>,
@@ -122,6 +123,7 @@ struct Tree {
       static_assert(
           std::is_convertible_v<decltype(op_v), std::function<T(T, Vertex)>>,
           "e must work as T(T, Vertex)");
+#endif
 
       vector<Vertex> order;  //!< order of dfs
       //! subtree_result[v][j] = subtree result which root is v's j-th child
