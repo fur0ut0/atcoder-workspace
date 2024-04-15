@@ -3,17 +3,24 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 
-template <typename T>
-vector<T> prime_factorize(T n) {
-   vector<T> v;
+/**
+ * @return pairs of prime and its exponent value
+ */
+template <typename I, typename T>
+vector<pair<T, I>> prime_factorize(T n) {
+   vector<pair<T, I>> v;
    for (T i = 2; i * i <= n; ++i) {
+      I e = 0;
       while (n % i == 0) {
-         v.push_back(i);
+         ++e;
          n /= i;
+      }
+      if (e > 0) {
+         v.push_back({i, e});
       }
    }
    if (n > 1) {
-      v.push_back(n);
+      v.push_back({n, 1});
    }
    return v;
 }
