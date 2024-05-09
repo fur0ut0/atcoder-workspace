@@ -11,7 +11,8 @@ struct Tree {
     * @param [in] N number of vertices
     * @param [in] E edges of tree
     */
-   explicit Tree(I N, const vector<pair<Vertex, Vertex>>& E) : n_vertices(N) {
+   explicit Tree(I N, const vector<pair<Vertex, Vertex>>& E)
+       : n_vertices(N), invalid_idx(n_vertices) {
       connected_vertices.resize(n_vertices);
       adjacent_indices.resize(n_vertices);
       for (auto [u, v] : E) {
@@ -25,7 +26,7 @@ struct Tree {
    bool IsValidTree() const {
       constexpr Vertex root = 0;
       vector<bool> is_visited(n_vertices);
-      auto dfs = [&](auto&& self, I v, I p = -1) -> bool {
+      auto dfs = [&](auto&& self, I v, I p = invalid_idx) -> bool {
          if (is_visited[v]) {
             return false;
          }
@@ -45,7 +46,8 @@ struct Tree {
     * @return first is distance, second is furthest vertex
     */
    pair<I, Vertex> FurthestVertex(Vertex v) const {
-      auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> pair<I, Vertex> {
+      auto dfs = [&](auto&& self, Vertex v,
+                     Vertex p = invalid_idx) -> pair<I, Vertex> {
          I max_d = 0;
          Vertex max_v = v;
          for (auto u : connected_vertices[v]) {
@@ -78,7 +80,7 @@ struct Tree {
       constexpr Vertex root = 0;
 
       vector<Vertex> centroids;
-      auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> T {
+      auto dfs = [&](auto&& self, Vertex v, Vertex p = invalid_idx) -> T {
          T subtree_weight = 0;
          bool is_centroid = true;
          for (auto u : connected_vertices[v]) {
@@ -131,7 +133,7 @@ struct Tree {
       for (Vertex v = 0; v < n_vertices; ++v) {
          subtree_result[v].resize(connected_vertices[v].size());
       }
-      auto dfs = [&](auto&& self, Vertex v, Vertex p = -1) -> void {
+      auto dfs = [&](auto&& self, Vertex v, Vertex p = invalid_idx) -> void {
          order.push_back(v);
          const auto& adj = connected_vertices[v];
 
@@ -140,10 +142,10 @@ struct Tree {
             self(self, u, v);
          }
 
-         if (p == -1) return;
+         if (p == invalid_idx) return;
 
          auto res = e();
-         I pi = -1;  //!< index of p viewed from v
+         I pi = invalid_idx;  //!< index of p viewed from v
          for (auto i = decltype(adj.size()){0}; i < adj.size(); ++i) {
             const auto u = adj[i];
             if (u == p) {
@@ -185,6 +187,7 @@ struct Tree {
    }
 
    I n_vertices;
+   I invalid_idx;
    vector<vector<Vertex>> connected_vertices;
    /**
     * NOTE: When connected_vertices[u][i] is v, adjacent_indices[u][i] contains
