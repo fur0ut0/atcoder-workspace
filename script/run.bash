@@ -38,7 +38,11 @@ csplit \
 
 for i in tmp/${basename}_*.txt; do
    echo "==> Test case '$i':"
-   "./$bin" < "${i}"
+   if [[ -v PROFILE_TIME ]]; then
+      time "./$bin" < "${i}"
+   else
+      "./$bin" < "${i}"
+   fi
 done
 
 popd
