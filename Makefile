@@ -1,7 +1,7 @@
 STD ?= 2a
 BASENAME ?= a
 
-CXX := g++
+CXX ?= g++
 CXXFLAGS := -fdiagnostics-color=always -std=c++$(STD) -I. -Wall -Wextra
 
 BUILD_DIR := bin
