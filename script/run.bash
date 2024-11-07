@@ -29,7 +29,12 @@ fi
 
 mkdir -p tmp
 rm -rf tmp/${basename}_*
-csplit \
+if which gcsplit > /dev/null; then
+   csplit=gcsplit
+else
+   csplit=csplit
+fi
+$csplit \
     --quiet \
     --prefix=tmp/${basename}_ \
     --suffix-format=%02d.txt \
