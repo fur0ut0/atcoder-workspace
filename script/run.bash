@@ -43,7 +43,7 @@ $csplit \
 
 for i in tmp/${basename}_*.txt; do
    echo "==> Test case '$i':"
-   if [[ -v PROFILE_TIME ]]; then
+   if [[ -n "${PROFILE_TIME:-}" ]]; then
       time "./$bin" < "${i}"
    else
       "./$bin" < "${i}"
